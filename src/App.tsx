@@ -36,7 +36,7 @@ export default class App extends React.Component<AppProperties, AppState> {
 
   //#region Fields
   protected iotSvcUrl: string;
-  
+
   protected iotSvcQuery: string;
   //#endregion
 
@@ -56,9 +56,9 @@ export default class App extends React.Component<AppProperties, AppState> {
       Tooltip,
       Legend
     );
-    
+
     this.iotSvcQuery = (window as any).LCU.State.APIQuery;
-    
+
     this.iotSvcUrl = (window as any).LCU.State.APIRoot;
 
     this.state = {
@@ -105,21 +105,26 @@ export default class App extends React.Component<AppProperties, AppState> {
 
             const sensorReadings = Object.keys(payload?.SensorReadings || {});
 
-            sensorReadings.forEach(srKey => {
+            sensorReadings.forEach((srKey) => {
               if (!newDr[payload.DeviceID][srKey]) {
                 newDr[payload.DeviceID][srKey] = new ChartState();
 
-                newDr[payload.DeviceID][srKey].Datasets = [{
-                  id: 1,
-                  label: srKey,
-                  data: []
-                }];
+                newDr[payload.DeviceID][srKey].Datasets = [
+                  {
+                    id: 1,
+                    label: srKey,
+                    data: [],
+                  },
+                ];
               }
-              
+
               const date = new Date(Date.parse(payload?.EventProcessedUtcTime));
               // const date = new Date(Date.parse(payload?.Timestamp));
 
-              newDr[payload.DeviceID][srKey].Datasets[0].data.push({x: date.toLocaleString(), y: payload?.SensorReadings[srKey]});
+              newDr[payload.DeviceID][srKey].Datasets[0].data.unshift({
+                x: date.toLocaleString(),
+                y: payload?.SensorReadings[srKey],
+              });
             });
 
             return newDr;
