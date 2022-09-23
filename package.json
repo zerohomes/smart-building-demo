@@ -1,6 +1,6 @@
 {
   "name": "@fathym-it/iot-ensemble-client-real-time-charts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "homepage": ".",
   "dependencies": {
