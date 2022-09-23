@@ -36,6 +36,8 @@ export default class App extends React.Component<AppProperties, AppState> {
 
   //#region Fields
   protected iotSvcUrl: string;
+  
+  protected iotSvcQuery: string;
   //#endregion
 
   //#region Properties
@@ -55,6 +57,8 @@ export default class App extends React.Component<AppProperties, AppState> {
       Legend
     );
     
+    this.iotSvcQuery = (window as any).LCU.State.APIQuery;
+    
     this.iotSvcUrl = (window as any).LCU.State.APIRoot;
 
     this.state = {
@@ -71,8 +75,6 @@ export default class App extends React.Component<AppProperties, AppState> {
   public render() {
     return (
       <div>
-        <pre>{this.state.Error}</pre>
-
         <Charts charts={this.state.ChartStates}></Charts>
       </div>
     );
@@ -84,9 +86,9 @@ export default class App extends React.Component<AppProperties, AppState> {
 
   //#region Helpers
   protected loadIoTData(): void {
-    const calcApi = `${this.iotSvcUrl}/WarmQuery?includeEmulated=true&page=1&pageSize=25`;
+    const iotApi = `${this.iotSvcUrl}${this.iotSvcQuery}`;
 
-    fetch(calcApi)
+    fetch(iotApi)
       .then((res) => res.json())
       .then(
         (result) => {
@@ -109,12 +111,15 @@ export default class App extends React.Component<AppProperties, AppState> {
 
                 newDr[payload.DeviceID][srKey].Datasets = [{
                   id: 1,
-                  label: '',
+                  label: srKey,
                   data: []
                 }];
               }
               
-              newDr[payload.DeviceID][srKey].Datasets[0].data.push(payload?.SensorReadings[srKey]);
+              const date = new Date(Date.parse(payload?.EventProcessedUtcTime));
+              // const date = new Date(Date.parse(payload?.Timestamp));
+
+              newDr[payload.DeviceID][srKey].Datasets[0].data.push({x: date.toLocaleString(), y: payload?.SensorReadings[srKey]});
             });
 
             return newDr;
@@ -124,12 +129,10 @@ export default class App extends React.Component<AppProperties, AppState> {
 
           const curDevice = deviceIds[0];
 
-          const err = JSON.stringify(devicesReadingcharts[curDevice]);
-
           this.setState({
             CurrentDevice: curDevice,
             ChartStates: devicesReadingcharts[curDevice],
-            Error: err, //null,
+            Error: undefined,
           });
         },
         (error) => {
