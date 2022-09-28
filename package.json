@@ -1,6 +1,6 @@
 {
-  "name": "@fathym-it/iot-ensemble-client-real-time-charts",
-  "version": "0.0.3",
+  "name": "@fathym-it/habistack-client-real-time-charts",
+  "version": "0.0.0",
   "private": false,
   "homepage": ".",
   "dependencies": {
