@@ -52,24 +52,6 @@ export default class Charts extends React.Component<
   public componentDidMount() {}
 
   public render() {
-    // const data = {
-    //   labels: ['Jun', 'Jul', 'Aug'],
-    //   datasets: [
-    //     {
-    //       id: 1,
-    //       label: '',
-    //       data: [5, 6, 7],
-    //     },
-    //     {
-    //       id: 2,
-    //       label: '',
-    //       data: [3, 2, 1],
-    //     },
-    //   ],
-    // };
-
-    // const datas = [data, data, data, data, data];
-
     const chartKeys = Object.keys(this.props.charts || []);
 
     const datas = chartKeys.map((chartKey) => {

@@ -131,7 +131,9 @@ export default class App extends React.Component<AppProperties, AppState> {
           <Button onClick={(e) => this.loadCharts()}>Load Charts</Button>
         </div>
 
-        <div>{/* <Charts charts={this.state.ChartStates}></Charts>  */}</div>
+        <div>
+          <Charts charts={this.state.ChartStates}></Charts>{' '}
+        </div>
 
         <div>{JSON.stringify(this.state.Error, null, 4)}</div>
       </div>
@@ -202,9 +204,39 @@ export default class App extends React.Component<AppProperties, AppState> {
       .then((res) => res.json())
       .then(
         (result) => {
+          const variableResults = result as any[];
+
+          const variableCharts = variableResults.reduce(
+            (vc, variableResult, i) => {
+              const newVc = {
+                ...vc,
+              };
+
+              if (!newVc[variableResult.name]) {
+                newVc[variableResult.name] = new ChartState();
+              }
+
+              newVc[variableResult.name].Datasets = [
+                {
+                  id: 1,
+                  label: variableResult.name,
+                  data: variableResult.values.map((value: any, i: number) => {
+                    return {
+                      x: i > 0 ? `${i}hr` : 'Now',
+                      y: value 
+                    }
+                  }),
+                },
+              ];
+
+              return newVc;
+            },
+            {}
+          );
+
           this.setState({
-            // ChartStates: devicesReadingcharts[curDevice],
-            Error: result,
+            ChartStates: variableCharts,
+            Error: undefined,
           });
         },
         (error) => {

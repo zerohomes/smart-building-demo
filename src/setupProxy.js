@@ -23,4 +23,19 @@ module.exports = function (app) {
       },
     })
   );
+  
+  app.use(
+    '/geocodio',
+    createProxyMiddleware({
+      target: 'https://api.geocod.io/v1.7/',
+      changeOrigin: true,
+      headers: {
+        'api-key': process.env.REACT_APP_GEOCODIO_API_KEY,
+      },
+      pathRewrite: {
+        '^/geocodio/': '/'
+      },
+      logLevel: 'debug',
+    })
+  );
 };
