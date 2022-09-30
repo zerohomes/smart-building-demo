@@ -24,7 +24,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>IoT Ensemble Client - Real Time Charts Starter</title>
+    <title>Habistack Client - Real Time Charts Starter</title>
     
     <link
       rel="stylesheet"
@@ -40,8 +40,9 @@
       window.LCU = {
         Application: {},
         State: {
-          APIQuery: '/WarmQuery?includeEmulated=false&page=1&pageSize=100',
-          APIRoot: '/api'
+          PointAPIQuery: '/api/v0/point-query',
+          VariablesAPIQuery: '/api/v0/api-variables',
+          APIRoot: '/habistack'
         },
         Settings: {},
       };

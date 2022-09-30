@@ -2,19 +2,19 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function (app) {
   app.use(
-    '/api',
+    '/habistack',
     createProxyMiddleware({
-      target: 'https://fathym-cloud-prd.azure-api.net/fcp-iotensemble/',
+      target: 'https://fathym-cloud-prd.azure-api.net/habistack/weather/ground/',
       changeOrigin: true,
       headers: {
-        'REACT_APP_IOT_ENSEMBLE_LCU_SUBSCRIPTION_ID': process.env.REACT_APP_PROXY_HOST,
+        'lcu-subscription-key': process.env.REACT_APP_HABISTACK_LCU_SUBSCRIPTION_ID,
       },
       pathRewrite: {
-        '^/api/': '/'
+        '^/habistack/': '/'
       },
       logLevel: 'debug',
-      onProxyReq: (proxyReq, req, res) => {
-        // proxyReq.setHeader()
+      onError: (err) => {
+        console.log(err);
       },
       onProxyRes: (proxyRes, req, res) => {
         // log original request and proxied request info

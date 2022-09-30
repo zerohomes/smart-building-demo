@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <!--Chart.js JS CDN--> 
+    <!-- Create own CDN w/ Fathym for Chart.js -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dial {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #ffffff;
+        }
+    </style>
+  </head>
+  <body style="margin: 0; background-image: linear-gradient(45deg, #00008a, #000000)">
+
+    <h3 style="color: white; padding: 7px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Weather Dashboard</h3>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="windGustChart"></canvas>
+    </div>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="windSpeedChart"></canvas>
+    </div>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="windDirectionChart"></canvas>
+    </div>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="precipRateChart"></canvas>
+    </div>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="precipTotalChart"></canvas>
+    </div>
+
+    <div style="max-width: 80%; height: 220px; margin-bottom: 20px;" class="glass">
+        <canvas id="surfaceTempChart"></canvas>
+    </div>
+
+
+    <script>
+
+const dataIn = 
+
+{
+    "Payloads": [
+    {
+            "_ts": 1658457591,
+            "DeviceData": {
+                "Latitude": 32.784618,
+                "Longitude": -79.940918
+            },
+            "DeviceID": "WeatherData",
+            "DeviceType": "WeatherData",
+            "EnterpriseLookup": "6d61c2f6-6087-4424-abae-438ffa4c886d",
+            "id": "5db21ce6-dae6-428d-bf1c-c73f8aceb437",
+            "SensorMetadata": null,
+            "SensorReadings": {
+                "WeatherData":[
+  {
+    "name": "WindGust",
+    "level": "Surface",
+    "values": [
+      9.239947,
+      9.0540085,
+      7.7815256,
+      8.133311,
+      10.204931,
+      12.608423,
+      13.3772955,
+      14.163428,
+      15.669647,
+      16.40226,
+      17.658972,
+      18.290602,
+      18.525068,
+      12.975237,
+      13.263516,
+      13.376844,
+      13.221736,
+      13.299294,
+      13.702928,
+      13.808014,
+      13.731865,
+      13.418683,
+      13.228704,
+      12.87548
+    ]
+  },
+  {
+    "name": "WindDirection",
+    "level": "10Meters",
+    "values": [
+      32.79628,
+      43.066338,
+      58.686913,
+      46.65212,
+      24.235367,
+      21.402275,
+      27.1426,
+      29.410393,
+      30.106562,
+      29.723442,
+      31.354992,
+      37.137886,
+      37.951553,
+      33.454,
+      34.945442,
+      35.750824,
+      35.19341,
+      34.785866,
+      35.542385,
+      36.060005,
+      36.97226,
+      37.606144,
+      38.36699,
+      40.445145
+    ]
+  },
+  {
+    "name": "WindSpeed",
+    "level": "10Meters",
+    "values": [
+      6.01229,
+      4.837155,
+      3.5726767,
+      3.4153364,
+      4.1714187,
+      5.0631757,
+      5.183546,
+      5.8424196,
+      6.888618,
+      7.0672526,
+      7.651435,
+      7.982099,
+      7.891471,
+      6.9820824,
+      7.0994043,
+      7.4673524,
+      7.3889985,
+      7.19853,
+      7.3458867,
+      7.3938656,
+      7.0688534,
+      6.976432,
+      7.0603685,
+      7.1943426
+    ]
+  },
+  {
+    "name": "PrecipitationRateMillisHr",
+    "level": "Surface",
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.0022463999812316615,
+      0.011239199830015423,
+      0.008114400134218158,
+      0.0005615999953079154,
+      0.012707999849226326
+    ]
+  },
+  {
+    "name": "TotalPrecipitation",
+    "level": "Surface",
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.0075055556,
+      0.017505556,
+      0.02,
+      0.02,
+      0.02,
+      0.02,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.024375
+    ]
+  },
+  {
+    "name": "Temperature",
+    "level": "Surface",
+    "values": [
+      298.24396,
+      296.2605,
+      294.98126,
+      294.34845,
+      293.8513,
+      293.53857,
+      293.24136,
+      292.8796,
+      292.31396,
+      291.789,
+      291.27618,
+      290.93246,
+      290.78854,
+      292.41287,
+      292.22974,
+      292.19397,
+      291.86905,
+      291.3582,
+      291.19217,
+      291.22437,
+      291.3385,
+      291.09747,
+      291.29483,
+      292.35266
+    ]
+  }
+]
+            },
+            "Timestamp": "2022-07-22T02:39:51.205Z",
+            "Version": "0.0.2",
+            "EventProcessedUtcTime": "2022-07-22T02:39:51.3451819Z",
+            "PartitionId": 2,
+            "EventEnqueuedUtcTime": "2022-07-22T02:39:51.266Z",
+            "IoTHub": {
+                "MessageId": null,
+                "CorrelationId": null,
+                "ConnectionDeviceId": "6d61c2f6-6087-4424-abae-438ffa4c886d-CharlestonHome",
+                "ConnectionDeviceGenerationId": "637842600137505708",
+                "EnqueuedTime": "2022-07-22T02:39:51.235Z"
+            },
+            "User": {
+                "LicenseType": "free",
+                "EnterpriseLookup": "6d61c2f6-6087-4424-abae-438ffa4c886d"
+            },
+            "LicenseType": "free",
+            "Devices": 1,
+            "DataInterval": 300,
+            "DataRetention": 43200,
+            "ttl": 43200,
+            "_rid": "jNxLAKzK9wdgdGMAAAAAAA==",
+            "_self": "dbs/jNxLAA==/colls/jNxLAKzK9wc=/docs/jNxLAKzK9wdgdGMAAAAAAA==/",
+            "_etag": "\"100676d7-0000-0700-0000-62da0df70000\"",
+            "_attachments": "attachments/"
+        }
+    ]
+}
+
+    Chart.defaults.color = "#ffffff";
+
+    var weatherTime = ['1hr', '2hr', '3hr', '4hr', '5hr', '6hr', '7hr', '8hr', '9hr', '10hr', '11hr', '12hr', '13hr', '14hr', '15hr', '16hr', '17hr', '18hr', '19hr', '20hr', '21hr', '22hr', '23hr', '24hr']
+    var weatherArray = []
+
+    dataIn.Payloads.forEach(Payload => {
+        weatherArray.push(Payload.SensorReadings.WeatherData)
+    })
+
+    var precipRateInches = []
+    var surfaceTempF = []
+    var windGustMPH = []
+    var windSpeedMPH = []
+        
+    weatherArray[0][3].values.forEach(value => {
+        precipRateInches.push(value * 0.03937008)
+    })
+
+    weatherArray[0][5].values.forEach(value => {
+        surfaceTempF.push(value * 9/5 - 459.67)
+    })
+
+    weatherArray[0][0].values.forEach(value => {
+        windGustMPH.push(value * 2.237)
+    })
+
+    weatherArray[0][2].values.forEach(value => {
+        windSpeedMPH.push(value * 2.237)
+    })
+
+
+    var weatherWindGust = document.getElementById('windGustChart').getContext('2d');
+      var windGustChart = new Chart(weatherWindGust, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: windGustMPH,
+                label: 'Wind Gusts mph',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+    var weatherWindDirection = document.getElementById('windDirectionChart').getContext('2d');
+      var windDirectionChart = new Chart(weatherWindDirection, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: weatherArray[0][1].values,
+                label: 'Wind Direction deg',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+    var weatherWindSpeed = document.getElementById('windSpeedChart').getContext('2d');
+      var windSpeedChart = new Chart(weatherWindSpeed, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: windSpeedMPH,
+                label: 'Wind Speed mph',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+    var weatherPrecipRate = document.getElementById('precipRateChart').getContext('2d');
+      var precipRateChart = new Chart(weatherPrecipRate, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: precipRateInches,
+                label: 'Precipitation Rate in/hr',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+    var weatherPrecipTotal = document.getElementById('precipTotalChart').getContext('2d');
+      var precipTotalChart = new Chart(weatherPrecipTotal, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: weatherArray[0][4].values,
+                label: 'Precipitation Total kg/m sq/s',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+
+    var weatherSurfaceTemp = document.getElementById('surfaceTempChart').getContext('2d');
+      var surfaceTempChart = new Chart(weatherSurfaceTemp, {
+          type: 'line',
+          data: {
+            labels: weatherTime,
+            datasets: [{ 
+                data: surfaceTempF,
+                label: 'Temperature F',
+                borderColor: 'rgb(100,150,200)',
+                backgroundColor: 'rgb(100,150,200,0.2)',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+    </script>
+  </body>
+</html>
+
