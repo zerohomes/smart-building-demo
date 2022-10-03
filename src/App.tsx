@@ -181,7 +181,7 @@ export default class App extends React.Component<AppProperties, AppState> {
   protected geocode(): void {
     const geocodeApi = `${this.geocodioSvcUrl}${
       this.geocodioQuery
-    }?q=${encodeURIComponent(this.state.Location.Name)}&api_key=a351f7f073a754400a775713363a65b64f35c51`;
+    }q=${encodeURIComponent(this.state.Location.Name)}`;
 
     fetch(geocodeApi)
       .then((res) => res.json())
