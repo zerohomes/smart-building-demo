@@ -33,9 +33,15 @@ module.exports = function (app) {
         'api-key': process.env.REACT_APP_GEOCODIO_API_KEY,
       },
       pathRewrite: {
-        '^/geocodio/': '/'
+        '^/geocodio/': '/',
+        // '?': `?api_key=${process.env.REACT_APP_GEOCODIO_API_KEY}`,
       },
       logLevel: 'debug',
+      onProxyRes: (proxyRes, req, res) => {
+        // log original request and proxied request info
+        const exchange = `[${req.method}] [${proxyRes.statusCode}] ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`;
+        console.log(exchange); // [GET] [200] / -> http://www.example.com
+      },
     })
   );
 };

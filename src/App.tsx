@@ -1,5 +1,5 @@
 import { debug } from 'console';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Charts, { ChartState } from './Controls/Charts';
 import {
   Chart as ChartJS,
@@ -17,6 +17,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
+import Input from '@mui/material/Input';
 
 class AppProperties {}
 
@@ -25,12 +26,26 @@ class AppState {
 
   public Error?: string;
 
+  public Location: {
+    Data: any;
+    Latitude: number;
+    Longitude: number;
+    Name: string;
+  };
+
   public SelectedVariables: string[];
 
   public Variables: { [name: string]: any };
 
   constructor() {
     this.ChartStates = {};
+
+    this.Location = {
+      Data: {},
+      Latitude: 39.7392,
+      Longitude: 104.9903,
+      Name: 'Denver, CO',
+    };
 
     this.SelectedVariables = [];
 
@@ -43,6 +58,10 @@ export default class App extends React.Component<AppProperties, AppState> {
   //#endregion
 
   //#region Fields
+  protected geocodioSvcUrl: string;
+
+  protected geocodioQuery: string;
+
   protected habistackSvcUrl: string;
 
   protected pointsSvcQuery: string;
@@ -67,6 +86,10 @@ export default class App extends React.Component<AppProperties, AppState> {
       Legend
     );
 
+    this.geocodioQuery = (window as any).LCU.State.GeocodioQuery;
+
+    this.geocodioSvcUrl = (window as any).LCU.State.GeocodioAPIRoot;
+
     this.habistackSvcUrl = (window as any).LCU.State.APIRoot;
 
     this.pointsSvcQuery = (window as any).LCU.State.PointAPIQuery;
@@ -76,12 +99,12 @@ export default class App extends React.Component<AppProperties, AppState> {
     this.state = {
       ...new AppState(),
       SelectedVariables: [
-        'WindGust',
-        'WindSpeed',
-        'WindDirection',
-        'PrecipitationRate',
-        'TotalPrecipitation',
-        'Temperature',
+        'WindGust_Surface',
+        'WindSpeed_10Meters',
+        'WindDirection_10Meters',
+        'PrecipitationRate_Surface',
+        'TotalPrecipitation_Surface',
+        'Temperature_Surface',
       ],
     };
   }
@@ -100,7 +123,7 @@ export default class App extends React.Component<AppProperties, AppState> {
 
       return (
         <MenuItem key={key} value={key} title={variable.doc}>
-          {key}
+          {variable.name} ({variable.level})
         </MenuItem>
       );
     });
@@ -110,6 +133,13 @@ export default class App extends React.Component<AppProperties, AppState> {
         {variableOptions?.length > 0 ? (
           <div>
             <div>
+              <Input
+                value={this.state.Location.Name}
+                onChange={(e) => this.onLocationChange(e)}
+              ></Input>
+            </div>
+
+            <div>
               <Select<string[]>
                 multiple
                 value={this.state.SelectedVariables}
@@ -118,7 +148,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value: any) => (
-                      <Chip key={value} label={value} />
+                      <Chip key={value} label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`} />
                     ))}
                   </Box>
                 )}
@@ -127,7 +157,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 {variableOptions}
               </Select>
 
-              <Button onClick={(e) => this.loadCharts()}>Load Charts</Button>
+              <Button onClick={(e) => this.geocode()}>Load Forecast</Button>
             </div>
 
             <div>
@@ -148,18 +178,49 @@ export default class App extends React.Component<AppProperties, AppState> {
   //#endregion
 
   //#region Helpers
+  protected geocode(): void {
+    const geocodeApi = `${this.geocodioSvcUrl}${
+      this.geocodioQuery
+    }?q=${encodeURIComponent(this.state.Location.Name)}&api_key=a351f7f073a754400a775713363a65b64f35c51`;
+
+    fetch(geocodeApi)
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          this.setState(
+            {
+              Location: {
+                Data: result,
+                Name: result.results[0].formatted_address,
+                Latitude: result.results[0].location.lat,
+                Longitude: result.results[0].location.lng,
+              },
+              Error: undefined,
+            },
+            () => {
+              this.loadCharts();
+            }
+          );
+        },
+        (error) => {
+          console.log(error);
+
+          this.setState({
+            Error: error,
+          });
+        }
+      );
+  }
+
   protected loadCharts(): void {
     const variables: any[] = this.state.SelectedVariables.map((sv) => {
+      const variable = this.state.Variables[sv];
+
       return {
-        name: sv,
-        level: this.state.Variables[sv].level,
+        name: variable.name,
+        level: variable.level,
       };
     });
-
-    const latLng = {
-      lat: 32.784618,
-      lng: -79.940918,
-    };
 
     const hourSeconds = 3600;
 
@@ -175,7 +236,8 @@ export default class App extends React.Component<AppProperties, AppState> {
 
     const points: any[] = pointSeconds.map((ps) => {
       return {
-        ...latLng,
+        lat: this.state.Location.Latitude,
+        lng: this.state.Location.Longitude,
         'relative-seconds': ps,
       };
     });
@@ -209,14 +271,16 @@ export default class App extends React.Component<AppProperties, AppState> {
                 ...vc,
               };
 
-              if (!newVc[variableResult.name]) {
-                newVc[variableResult.name] = new ChartState();
+              const variableKey = `${variableResult.name}_${variableResult.level}`
+
+              if (!newVc[variableKey]) {
+                newVc[variableKey] = new ChartState();
               }
 
-              newVc[variableResult.name].Datasets = [
+              newVc[variableKey].Datasets = [
                 {
                   id: 1,
-                  label: variableResult.name,
+                  label: `${variableResult.name} (${variableResult.level})`,
                   data: variableResult.values.map((value: any, i: number) => {
                     return {
                       x: i > 0 ? `${i}hr` : 'Now',
@@ -260,15 +324,19 @@ export default class App extends React.Component<AppProperties, AppState> {
               ...vars,
             };
 
-            if (!newVar[variable.name]) {
-              newVar[variable.name] = {};
+            const variableKey = `${variable.name}_${variable.level}`
+
+            if (!newVar[variableKey]) {
+              newVar[variableKey] = {};
             }
 
-            newVar[variable.name].doc = variable.doc;
+            newVar[variableKey].name = variable.name;
 
-            newVar[variable.name].level = variable.level;
+            newVar[variableKey].doc = variable.doc;
 
-            newVar[variable.name].units = variable.units;
+            newVar[variableKey].level = variable.level;
+
+            newVar[variableKey].units = variable.units;
 
             return newVar;
           }, {});
@@ -280,7 +348,7 @@ export default class App extends React.Component<AppProperties, AppState> {
               Error: undefined,
             },
             () => {
-              this.loadCharts();
+              this.geocode();
             }
           );
         },
@@ -292,6 +360,17 @@ export default class App extends React.Component<AppProperties, AppState> {
           });
         }
       );
+  }
+
+  protected onLocationChange(
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    this.setState({
+      Location: {
+        ...this.state.Location,
+        Name: event.target.value,
+      },
+    });
   }
 
   protected onVariableChange(event: SelectChangeEvent<string[]>): void {
