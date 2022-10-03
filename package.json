@@ -1,6 +1,6 @@
 {
   "name": "@fathym-it/habistack-client-real-time-charts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "homepage": ".",
   "dependencies": {
