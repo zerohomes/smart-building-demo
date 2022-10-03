@@ -107,8 +107,8 @@ export default class App extends React.Component<AppProperties, AppState> {
 
     return (
       <div>
-        <div>
-          {variableOptions?.length > 0 ? (
+        {variableOptions?.length > 0 ? (
+          <div>
             <div>
               <Select<string[]>
                 multiple
@@ -129,18 +129,14 @@ export default class App extends React.Component<AppProperties, AppState> {
 
               <Button onClick={(e) => this.loadCharts()}>Load Charts</Button>
             </div>
-          ) : (
-            'Loading...'
-          )}
-        </div>
 
-        <div>
-          {true ? (
-            <Charts charts={this.state.ChartStates}></Charts>
-          ) : (
-            'Loading...'
-          )}
-        </div>
+            <div>
+              <Charts charts={this.state.ChartStates}></Charts>
+            </div>
+          </div>
+        ) : (
+          'Loading...'
+        )}
 
         <div>{JSON.stringify(this.state.Error, null, 4)}</div>
       </div>

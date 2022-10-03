@@ -66,7 +66,7 @@ export default class Charts extends React.Component<
 
     console.log(datas);
 
-    return (
+    return datas?.length > 0 ? (
       <Grid container spacing={2}>
         {datas.map((data, i) => {
           console.log(data);
@@ -80,6 +80,8 @@ export default class Charts extends React.Component<
           );
         })}
       </Grid>
+    ) : (
+      'Loading...'
     );
   }
   //#endregion
