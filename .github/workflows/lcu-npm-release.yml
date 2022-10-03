@@ -16,7 +16,7 @@ env:
   InstallCommand: npm ci
   DeployCommand: npm publish --access public
   Organization: fathym-it
-  Repository: habistack-client-real-time-charts
+  Repository: habistack-real-time-charts
   Output: ./build
 
 jobs:
@@ -56,7 +56,7 @@ jobs:
         id: package_json_exists
         uses: fathym/file-existence-action@master
         with:
-          files: 'package.json'
+          files: "package.json"
 
       # replace text in package.json for main branch
       - name: replace version text for main branch
@@ -112,7 +112,7 @@ jobs:
           RELEASE_BRANCHES: .*
           WITH_V: false
       - run: echo "New version is ${{ steps.versionBump.outputs.new_tag }}"
-
+      
       # webhook to LowCodeUnit
       - name: Invoke deployment hook
         uses: fathym/workflow-webhook@v2
