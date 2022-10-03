@@ -104,35 +104,42 @@ export default class App extends React.Component<AppProperties, AppState> {
         </MenuItem>
       );
     });
+
     return (
       <div>
         <div>
-          {true && (
-            <Select<string[]>
-              multiple
-              value={this.state.SelectedVariables}
-              label="Variables"
-              input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value: any) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
-              onChange={(e) => this.onVariableChange(e)}
-            >
-              {variableOptions}
-            </Select>
+          {variableOptions?.length > 0 ? (
+            <div>
+              <Select<string[]>
+                multiple
+                value={this.state.SelectedVariables}
+                label="Variables"
+                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value: any) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+                onChange={(e) => this.onVariableChange(e)}
+              >
+                {variableOptions}
+              </Select>
+
+              <Button onClick={(e) => this.loadCharts()}>Load Charts</Button>
+            </div>
+          ) : (
+            'Loading...'
           )}
         </div>
 
         <div>
-          <Button onClick={(e) => this.loadCharts()}>Load Charts</Button>
-        </div>
-
-        <div>
-          <Charts charts={this.state.ChartStates}></Charts>{' '}
+          {true ? (
+            <Charts charts={this.state.ChartStates}></Charts>
+          ) : (
+            'Loading...'
+          )}
         </div>
 
         <div>{JSON.stringify(this.state.Error, null, 4)}</div>
@@ -165,7 +172,7 @@ export default class App extends React.Component<AppProperties, AppState> {
     let pointSeconds = Array.apply(null, Array(hours));
 
     pointSeconds = pointSeconds.map((v, i) => {
-      return hourSeconds * i; 
+      return hourSeconds * i;
     });
 
     console.log(pointSeconds);
@@ -217,8 +224,8 @@ export default class App extends React.Component<AppProperties, AppState> {
                   data: variableResult.values.map((value: any, i: number) => {
                     return {
                       x: i > 0 ? `${i}hr` : 'Now',
-                      y: value 
-                    }
+                      y: value,
+                    };
                   }),
                 },
               ];
