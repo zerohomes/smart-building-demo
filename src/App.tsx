@@ -160,21 +160,15 @@ export default class App extends React.Component<AppProperties, AppState> {
 
     const hourSeconds = 3600;
 
-    const pointSeconds = [
-      0,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-      hourSeconds * 1,
-    ];
+    const hours = 24;
+
+    let pointSeconds = Array.apply(null, Array(hours));
+
+    pointSeconds = pointSeconds.map((v, i) => {
+      return hourSeconds * i; 
+    });
+
+    console.log(pointSeconds);
 
     const points: any[] = pointSeconds.map((ps) => {
       return {
