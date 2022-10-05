@@ -50,6 +50,18 @@ jobs:
           echo "Set Variable Checks ${{ github.ref }}"
           echo "Current branch is ${{ steps.vars.outputs.branchName }}"
           echo "Version bump type is ${{ steps.vars.outputs.versionBump }}"
+          
+      # bump version
+      - name: Bump version
+        uses: fathym/github-tag-action@master
+        id: versionBump
+        env:
+          DEFAULT_BUMP: ${{ steps.vars.outputs.versionBump }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BRANCHES: .*
+          WITH_V: false
+          DRY_RUN: true
+      - run: echo "New version is ${{ steps.versionBump.outputs.new_tag }}"          
 
       # Check package.json exists
       - name: Check package.json existence
@@ -100,18 +112,18 @@ jobs:
         with:
           name: ${{ github.event.organization.name }}-${{ github.event.repository.name }}
           path: ${{ env.Output }}
-
+          
       # bump version and push tag
       - name: Bump version and push tag
-        id: versionBump
         uses: fathym/github-tag-action@master
-        if: ${{ steps.package_json_exists.outputs.files_exists == 'true' }}
+        id: pushTag
         env:
           DEFAULT_BUMP: ${{ steps.vars.outputs.versionBump }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_BRANCHES: .*
           WITH_V: false
-      - run: echo "New version is ${{ steps.versionBump.outputs.new_tag }}"
+          DRY_RUN: false
+      - run: echo "New version is ${{ steps.pushTag.outputs.new_tag }}"            
       
       # webhook to LowCodeUnit
       - name: Invoke deployment hook
