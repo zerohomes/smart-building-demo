@@ -14,7 +14,7 @@ env:
   MainBranch: main
   NPMRegistry: https://registry.npmjs.org/
   InstallCommand: npm ci
-  DeployCommand: npm publish --access public
+  DeployCommand: npm run deploy
   Organization: fathym-it
   Repository: habistack-real-time-charts
   Output: ./build
