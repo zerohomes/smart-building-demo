@@ -27,7 +27,7 @@ module.exports = function (app) {
   app.use(
     '/geocodio',
     createProxyMiddleware({
-      target: `https://api.geocod.io/v1.7/geocode?api_key=${process.env.REACT_APP_GEOCODIO_API_KEY}`,
+      target: `https://api.geocod.io/v1.7/`,
       changeOrigin: true,
       headers: {
         'api-key': process.env.REACT_APP_GEOCODIO_API_KEY,
@@ -36,6 +36,11 @@ module.exports = function (app) {
         '^/geocodio/': '/',
       },
       logLevel: 'debug',
+      onProxyReq: (proxyReq, req, res) => {
+        console.log('Adding Geocodio API key to path');
+        
+        proxyReq.path = `${proxyReq.path}&api_key=${process.env.REACT_APP_GEOCODIO_API_KEY}`;
+      },
       onProxyRes: (proxyRes, req, res) => {
         // log original request and proxied request info
         const exchange = `[${req.method}] [${proxyRes.statusCode}] ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`;

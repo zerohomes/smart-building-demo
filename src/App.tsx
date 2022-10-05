@@ -148,7 +148,10 @@ export default class App extends React.Component<AppProperties, AppState> {
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value: any) => (
-                      <Chip key={value} label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`} />
+                      <Chip
+                        key={value}
+                        label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`}
+                      />
                     ))}
                   </Box>
                 )}
@@ -179,9 +182,9 @@ export default class App extends React.Component<AppProperties, AppState> {
 
   //#region Helpers
   protected geocode(): void {
-    const geocodeApi = `${this.geocodioSvcUrl}${
-      this.geocodioQuery
-    }q=${encodeURIComponent(this.state.Location.Name)}`;
+    const location = encodeURIComponent(this.state.Location.Name);
+
+    const geocodeApi = `${this.geocodioSvcUrl}${this.geocodioQuery}?q=${location}`;
 
     fetch(geocodeApi)
       .then((res) => res.json())
@@ -271,7 +274,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 ...vc,
               };
 
-              const variableKey = `${variableResult.name}_${variableResult.level}`
+              const variableKey = `${variableResult.name}_${variableResult.level}`;
 
               if (!newVc[variableKey]) {
                 newVc[variableKey] = new ChartState();
@@ -324,7 +327,7 @@ export default class App extends React.Component<AppProperties, AppState> {
               ...vars,
             };
 
-            const variableKey = `${variable.name}_${variable.level}`
+            const variableKey = `${variable.name}_${variable.level}`;
 
             if (!newVar[variableKey]) {
               newVar[variableKey] = {};
