@@ -48,8 +48,8 @@ class AppState {
 
     this.Location = {
       Data: {},
-      Latitude: 39.7392,
-      Longitude: 104.9903,
+      Latitude: 0,
+      Longitude: 0,
       Name: 'Denver, CO',
     };
 
@@ -73,8 +73,13 @@ export default class App extends React.Component<AppProperties, AppState> {
   protected iotSvcUrl: string;
 
   protected iotSvcQuery: string;
+
   protected pointsSvcQuery: string;
 
+  protected refreshRate: number;
+  
+  protected refreshTimer: any;
+  
   protected variablesSvcQuery: string;
   //#endregion
 
@@ -105,6 +110,10 @@ export default class App extends React.Component<AppProperties, AppState> {
 
     this.iotSvcUrl = (window as any).LCU.State.IoTAPIRoot;
 
+    const defaultLocation = (window as any).LCU.State.Location;
+
+    this.refreshRate = (window as any).LCU.State.RefreshRate || 30000;
+
     this.pointsSvcQuery = (window as any).LCU.State.PointAPIQuery;
 
     this.variablesSvcQuery = (window as any).LCU.State.VariablesAPIQuery;
@@ -121,15 +130,27 @@ export default class App extends React.Component<AppProperties, AppState> {
     this.state = {
       ...new AppState(),
       SelectedVariables: selectedVars,
+      Location: {
+        Data: {},
+        Latitude: 0,
+        Longitude: 0,
+        Name: defaultLocation
+      }
     };
   }
   //#endregion
 
   //#region Life Cycle
   public componentDidMount() {
-    this.loadIoTData();
+    if (!this.refreshTimer) {
+      this.loadVariablesData();
 
-    this.loadVariablesData();
+      this.refreshTimer = setInterval(() => {
+        this.loadIoTData();
+        
+        this.geocode();
+      }, this.refreshRate);
+    }
   }
 
   public render() {
