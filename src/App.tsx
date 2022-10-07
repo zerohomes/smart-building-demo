@@ -148,7 +148,7 @@ export default class App extends React.Component<AppProperties, AppState> {
       this.refreshTimer = setInterval(() => {
         this.loadIoTData();
         
-        this.geocode();
+        this.loadCharts();
       }, this.refreshRate);
     }
   }
