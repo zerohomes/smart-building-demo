@@ -25,7 +25,7 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Habistack Client - Real Time Charts Starter</title>
-    
+
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
@@ -42,11 +42,18 @@
         State: {
           PointAPIQuery: '/api/v0/point-query',
           VariablesAPIQuery: '/api/v0/api-variables',
-          APIRoot: '/habistack',
-          GeocodioAPIRoot: '/geocodio',
-          GeocodioQuery: '/geocode'
+          HabistackAPIRoot: '/api/habistack',
+          GeocodioAPIRoot: '/api/geocodio',
+          GeocodioQuery: '/geocode',
+          IoTAPIQuery: '/WarmQuery?includeEmulated=true&page=1&pageSize=100',
+          IoTAPIRoot: '/api/iot',
+          SelectedVariables: [
+            'WindGust_Surface',
+            'WindSpeed_10Meters',
+            'WindDirection_10Meters',
+          ],
         },
-        Settings: {}, 
+        Settings: {},
       };
     </script>
   </head>
