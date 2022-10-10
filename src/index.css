@@ -11,3 +11,61 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#building {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 400px; 
+  background-image: url(/public/icons/oil.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#human {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 400px; 
+  background-image: url(/public/icons/human.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#motionSensor {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding: 2px;
+  background-color: rgba(255,255,255,.85);
+  border-radius: 6px;
+  border: 2px solid white;
+  font-size: x-small;
+}
+
+#motionSensor img {
+  width: 36px;
+  height: 36px;
+  float: left;
+  user-select: none;
+}
+
+#tempSensor {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding: 2px;
+  background-color: rgba(255,255,255,.85);
+  border-radius: 6px;
+  border: 2px solid white;
+  font-size: x-small;
+}
+
+#tempSensor img {
+  width: 36px;
+  height: 36px;
+  float: left;
+  user-select: none;
+}

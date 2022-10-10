@@ -10,6 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarElement,
 } from 'chart.js';
 import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -95,6 +96,7 @@ export default class App extends React.Component<AppProperties, AppState> {
       LinearScale,
       PointElement,
       LineElement,
+      BarElement,
       Title,
       Tooltip,
       Legend
