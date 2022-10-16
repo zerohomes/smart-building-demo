@@ -55,55 +55,61 @@
           ChartPrefs: [
             {
               Name: 'humidity',
+              ChartType: 'Line',
               BackgroundColor:'rgb(0, 125, 125)',
               BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Line'
+              BorderDash: [15, 3, 3, 3]
             },
             {
               Name: 'tempf',
+              BackgroundColor:'rgb(255, 0, 0)',
+              BorderColor: 'rgb(200, 0, 0)',
               ChartType: 'Line'
             },
             {
               Name: 'motion',
+              ChartType: 'Building',
               BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Building'
+              BorderColor: 'rgb(0, 0, 255)'
             },
             {
               Name: 'magnet',
+              ChartType: 'Bar',
               BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Bar'
+              BorderColor: 'rgb(0, 0, 255)'
             },
             {
               Name: 'o_humidity',
+              ChartType: 'Bar',
               BackgroundColor:'rgb(0, 180, 40)',
-              BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Bar'
+              BorderColor: 'rgb(0, 0, 255)'
             },
             {
               Name: 'o_tempf',
+              ChartType: 'Line',
               BackgroundColor:'rgb(255, 0, 255)',
-              BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Line'
+              BorderColor: 'rgb(0, 0, 255)'
             },
             {
               Name: 'petentiometer',
+              ChartType: 'Line',
               BackgroundColor:'rgb(125, 0, 255)',
               BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Line'
+              BorderWidth: '5'
             },
             {
               Name: 'photoresistor',
+              ChartType: 'Line',
               BackgroundColor:'rgb(125, 0, 200)',
               BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Bar'
+              BorderJoinStyle: 'bevel',
+              BorderWidth: '5'
             },
             {
               Name: 'rangecm',
+              ChartType: 'Line',
               BackgroundColor:'rgb(125, 80, 0)',
-              BorderColor: 'rgb(0, 0, 255)',
-              ChartType: 'Line'
+              BorderColor: 'rgb(0, 0, 255)'
             }
           ],
           Location: 'Charleston, SC 29412',
