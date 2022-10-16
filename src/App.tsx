@@ -40,6 +40,8 @@ class AppState {
 
   public SelectedVariables: string[];
 
+  public ChartPrefs: { [name: string]: any };
+
   public Variables: { [name: string]: any };
 
   constructor() {
@@ -55,6 +57,8 @@ class AppState {
     };
 
     this.SelectedVariables = [];
+
+    this.ChartPrefs = {};
 
     this.Variables = {};
   }
@@ -129,9 +133,12 @@ export default class App extends React.Component<AppProperties, AppState> {
       'Temperature_Surface',
     ];
 
+    const chartPrefs = (window as any).LCU.State.ChartPrefs;
+
     this.state = {
       ...new AppState(),
       SelectedVariables: selectedVars,
+      ChartPrefs: chartPrefs,
       Location: {
         Data: {},
         Latitude: 0,
@@ -146,10 +153,9 @@ export default class App extends React.Component<AppProperties, AppState> {
   public componentDidMount() {
     if (!this.refreshTimer) {
       this.loadVariablesData();
+      this.loadIoTData();
 
       this.refreshTimer = setInterval(() => {
-        this.loadIoTData();
-        
         this.loadCharts();
       }, this.refreshRate);
     }
@@ -336,6 +342,16 @@ export default class App extends React.Component<AppProperties, AppState> {
                 x: date.toLocaleString(),
                 y: payload?.SensorReadings[srKey],
               });
+
+              //Set IoT Chart Preferences
+              const currentChartPref = this.state.ChartPrefs.find((e: any) => e.Name === newDr[payload.DeviceID][srKey].Datasets[0].label);
+              
+              if(currentChartPref != undefined) {
+                newDr[payload.DeviceID][srKey].Datasets[0].backgroundColor = currentChartPref?.BackgroundColor;
+                newDr[payload.DeviceID][srKey].Datasets[0].borderColor = currentChartPref?.BorderColor;
+                newDr[payload.DeviceID][srKey].Datasets[0].chartType = currentChartPref?.ChartType;
+              }
+              
             });
 
             return newDr;
