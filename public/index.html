@@ -58,13 +58,15 @@
               ChartType: 'Line',
               BackgroundColor:'rgb(0, 125, 125)',
               BorderColor: 'rgb(0, 0, 255)',
-              BorderDash: [15, 3, 3, 3]
+              BorderDash: [15, 3, 3, 3],
+              Options: { layout: { padding: 0 } }
             },
             {
               Name: 'tempf',
+              ChartType: 'Bar',
               BackgroundColor:'rgb(255, 0, 0)',
               BorderColor: 'rgb(200, 0, 0)',
-              ChartType: 'Line'
+              Options: { scales: { y: { beginAtZero: false } } }
             },
             {
               Name: 'motion',
@@ -76,7 +78,7 @@
               Name: 'magnet',
               ChartType: 'Bar',
               BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(0, 0, 255)'
+              BorderColor: 'rgb(0, 0, 255)',
             },
             {
               Name: 'o_humidity',
