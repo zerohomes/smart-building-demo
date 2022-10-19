@@ -343,13 +343,20 @@ export default class App extends React.Component<AppProperties, AppState> {
                 y: payload?.SensorReadings[srKey],
               });
 
-              //Set IoT Chart Preferences
+              // Set Chart Preferences
               const currentChartPref = this.state.ChartPrefs.find((e: any) => e.Name === newDr[payload.DeviceID][srKey].Datasets[0].label);
-              
+
               if(currentChartPref != undefined) {
-                newDr[payload.DeviceID][srKey].Datasets[0].backgroundColor = currentChartPref?.BackgroundColor;
-                newDr[payload.DeviceID][srKey].Datasets[0].borderColor = currentChartPref?.BorderColor;
-                newDr[payload.DeviceID][srKey].Datasets[0].chartType = currentChartPref?.ChartType;
+                Object.keys(currentChartPref).forEach(key => {
+
+                  // Chartjs properties must have a lower case initial letter
+                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
+                  newDr[payload.DeviceID][srKey].Datasets[0][fixedKey] = currentChartPref[key];
+
+                  // Pass Options
+                  newDr[payload.DeviceID][srKey].Datasets[0].options = currentChartPref?.Options;
+                  
+                });
               }
               
             });

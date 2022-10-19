@@ -70,12 +70,12 @@ export default class Charts extends React.Component<
     return datas?.length > 0 ? (
       <Grid container spacing={2}>
         {datas.map((data, i) => {
-          console.log("DATA:" + data.datasets[0].chartType);
+          //console.log(data.datasets[0].chartType);
           if (data.datasets[0].chartType === "Line" || !data.datasets[0].chartType) {
           return (
             <Grid xs={12} md={6} item={true} key={i}>
               <Card>
-                <Line datasetIdKey="id" data={data} />
+                <Line datasetIdKey="id" data={data} options={data.datasets[0].options} />
               </Card>
             </Grid>
           ); }
@@ -83,7 +83,7 @@ export default class Charts extends React.Component<
             return (
               <Grid xs={12} md={6} item={true} key={i}>
                 <Card>
-                  <Bar datasetIdKey="id" data={data} />
+                  <Bar datasetIdKey="id" data={data} options={data.datasets[0].options} />
                 </Card>
               </Grid>
           ); }
