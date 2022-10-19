@@ -82,9 +82,9 @@ export default class App extends React.Component<AppProperties, AppState> {
   protected pointsSvcQuery: string;
 
   protected refreshRate: number;
-  
+
   protected refreshTimer: any;
-  
+
   protected variablesSvcQuery: string;
   //#endregion
 
@@ -143,8 +143,8 @@ export default class App extends React.Component<AppProperties, AppState> {
         Data: {},
         Latitude: 0,
         Longitude: 0,
-        Name: defaultLocation
-      }
+        Name: defaultLocation,
+      },
     };
   }
   //#endregion
@@ -157,6 +157,8 @@ export default class App extends React.Component<AppProperties, AppState> {
 
       this.refreshTimer = setInterval(() => {
         this.loadCharts();
+
+        this.loadIoTData();
       }, this.refreshRate);
     }
   }
@@ -235,6 +237,24 @@ export default class App extends React.Component<AppProperties, AppState> {
   //#endregion
 
   //#region Helpers
+  protected addChartPref(chartState: ChartState): void {
+    const currentChartPref = this.state.ChartPrefs.find(
+      (e: any) => e.Name === chartState.Datasets[0].label
+    );
+
+    if (currentChartPref != undefined) {
+      Object.keys(currentChartPref).forEach((key) => {
+        // Chartjs properties must have a lower case initial letter
+        const fixedKey =
+          key.toString().charAt(0).toLowerCase() + key.substring(1);
+        chartState.Datasets[0][fixedKey] = currentChartPref[key];
+
+        // Pass Options
+        chartState.Datasets[0].options = currentChartPref?.Options;
+      });
+    }
+  }
+
   protected geocode(): void {
     const location = encodeURIComponent(this.state.Location.Name);
 
@@ -344,21 +364,7 @@ export default class App extends React.Component<AppProperties, AppState> {
               });
 
               // Set Chart Preferences
-              const currentChartPref = this.state.ChartPrefs.find((e: any) => e.Name === newDr[payload.DeviceID][srKey].Datasets[0].label);
-
-              if(currentChartPref != undefined) {
-                Object.keys(currentChartPref).forEach(key => {
-
-                  // Chartjs properties must have a lower case initial letter
-                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
-                  newDr[payload.DeviceID][srKey].Datasets[0][fixedKey] = currentChartPref[key];
-
-                  // Pass Options
-                  newDr[payload.DeviceID][srKey].Datasets[0].options = currentChartPref?.Options;
-                  
-                });
-              }
-              
+              this.addChartPref(newDr[payload.DeviceID][srKey]);
             });
 
             return newDr;
@@ -426,6 +432,10 @@ export default class App extends React.Component<AppProperties, AppState> {
                   }),
                 },
               ];
+
+              debugger;
+              // Set Chart Preferences
+              this.addChartPref(newVc[variableKey]);
 
               return newVc;
             },

@@ -54,7 +54,7 @@
           ],
           ChartPrefs: [
             {
-              Name: 'humidity',
+              Name: 'WindGust (Surface)',
               ChartType: 'Line',
               BackgroundColor:'rgb(0, 125, 125)',
               BorderColor: 'rgb(0, 0, 255)',
@@ -62,45 +62,39 @@
               Options: { layout: { padding: 0 } }
             },
             {
-              Name: 'tempf',
-              ChartType: 'Bar',
-              BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(200, 0, 0)',
-              Options: { scales: { y: { beginAtZero: false } } }
-            },
-            {
-              Name: 'motion',
-              ChartType: 'Building',
-              BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(0, 0, 255)'
-            },
-            {
-              Name: 'magnet',
-              ChartType: 'Bar',
-              BackgroundColor:'rgb(255, 0, 0)',
-              BorderColor: 'rgb(0, 0, 255)',
-            },
-            {
-              Name: 'o_humidity',
-              ChartType: 'Bar',
-              BackgroundColor:'rgb(0, 180, 40)',
-              BorderColor: 'rgb(0, 0, 255)'
-            },
-            {
-              Name: 'o_tempf',
+              Name: 'WindSpeed (10Meters)',
               ChartType: 'Line',
               BackgroundColor:'rgb(255, 0, 255)',
               BorderColor: 'rgb(0, 0, 255)'
             },
             {
-              Name: 'petentiometer',
+              Name: 'WindDirection (10Meters)',
               ChartType: 'Line',
               BackgroundColor:'rgb(125, 0, 255)',
               BorderColor: 'rgb(0, 0, 255)',
               BorderWidth: '5'
             },
             {
-              Name: 'photoresistor',
+              Name: 'Temperature',
+              ChartType: 'Bar',
+              BackgroundColor:'rgb(255, 0, 0)',
+              BorderColor: 'rgb(200, 0, 0)',
+              Options: { scales: { y: { beginAtZero: false } } }
+            },
+            {
+              Name: 'Humidity',
+              ChartType: 'Bar',
+              BackgroundColor:'rgb(0, 180, 40)',
+              BorderColor: 'rgb(0, 0, 255)'
+            },
+            {
+              Name: 'Occupied',
+              ChartType: 'Bar',
+              BackgroundColor:'rgb(255, 0, 0)',
+              BorderColor: 'rgb(0, 0, 255)',
+            },
+            {
+              Name: 'Occupancy',
               ChartType: 'Line',
               BackgroundColor:'rgb(125, 0, 200)',
               BorderColor: 'rgb(0, 0, 255)',
