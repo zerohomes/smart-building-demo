@@ -70,8 +70,8 @@ export default class Charts extends React.Component<
     return datas?.length > 0 ? (
       <Grid container spacing={2}>
         {datas.map((data, i) => {
-          console.log("DATA:" + data.datasets[0].label);
-          if (data.datasets[0].label !== "WindDirection (10Meters)" && data.datasets[0].label !== "motion" && data.datasets[0].label !== "tempf") {
+          console.log("DATA:" + data.datasets[0].chartType);
+          if (data.datasets[0].chartType === "Line" || !data.datasets[0].chartType) {
           return (
             <Grid xs={12} md={6} item={true} key={i}>
               <Card>
@@ -79,7 +79,7 @@ export default class Charts extends React.Component<
               </Card>
             </Grid>
           ); }
-          if (data.datasets[0].label === "WindDirection (10Meters)") {
+          if (data.datasets[0].chartType === "Bar") {
             return (
               <Grid xs={12} md={6} item={true} key={i}>
                 <Card>
@@ -123,9 +123,9 @@ export default class Charts extends React.Component<
               </Grid>
           ); }
 
-          if (data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 0) {
+          if (data.datasets[0].chartType === "Building" && data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 0) {
             return (
-              <Grid xs={12} md={6} item={true} key={i}>
+              <Grid xs={12} md={12} item={true} key={i}>
                 <Card>
                   <div id="building">
                     <Draggable>
@@ -139,9 +139,9 @@ export default class Charts extends React.Component<
                 </Card>
               </Grid>
           ); }
-          if (data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 1) {
+          if (data.datasets[0].chartType === "Building" && data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 1) {
             return (
-              <Grid xs={12} md={6} item={true} key={i}>
+              <Grid xs={12} md={12} item={true} key={i}>
                 <Card>
                   <div id="building">
                     <Draggable>
