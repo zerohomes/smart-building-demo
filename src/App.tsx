@@ -31,6 +31,12 @@ class AppState {
 
   public Error?: string;
 
+  public GeocodioAPIState?: number;
+
+  public HabistackAPIState?: number;
+
+  public IoTEnsembleAPIState?: number;
+
   public Location: {
     Data: any;
     Latitude: number;
@@ -181,57 +187,101 @@ export default class App extends React.Component<AppProperties, AppState> {
         {variableOptions?.length > 0 ? (
           <div>
             <div>
-              <div>
+              {!this.state.GeocodioAPIState ? (
                 <Input
                   value={this.state.Location.Name}
                   onChange={(e) => this.onLocationChange(e)}
                 ></Input>
-              </div>
-
-              <div>
-                <Select<string[]>
-                  multiple
-                  value={this.state.SelectedVariables}
-                  label="Variables"
-                  input={
-                    <OutlinedInput id="select-multiple-chip" label="Chip" />
-                  }
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value: any) => (
-                        <Chip
-                          key={value}
-                          label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                  onChange={(e) => this.onVariableChange(e)}
-                >
-                  {variableOptions}
-                </Select>
-
-                <Button onClick={(e) => this.geocode()}>Load Forecast</Button>
-              </div>
-
-              <div>
-                <Charts charts={this.state.ChartStates}></Charts>
-              </div>
+              ) : (
+                this.addAPIErrors(
+                  this.state.GeocodioAPIState,
+                  'Geocodio',
+                  '/docs'
+                )
+              )}
             </div>
 
             <div>
-              <Charts charts={this.state.DeviceChartStates}></Charts>
+              <Select<string[]>
+                multiple
+                value={this.state.SelectedVariables}
+                label="Variables"
+                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value: any) => (
+                      <Chip
+                        key={value}
+                        label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`}
+                      />
+                    ))}
+                  </Box>
+                )}
+                onChange={(e) => this.onVariableChange(e)}
+              >
+                {variableOptions}
+              </Select>
+
+              <Button onClick={(e) => this.geocode()}>Load Forecast</Button>
+            </div>
+
+            <div>
+              <Charts charts={this.state.ChartStates}>
+                {this.addAPIErrors(
+                  this.state.HabistackAPIState,
+                  'Habistack',
+                  '/docs'
+                )}
+              </Charts>
             </div>
           </div>
         ) : (
-          'Loading...'
+          this.addAPIErrors(this.state.HabistackAPIState, 'Habistack', '/docs')
         )}
 
-        <div>{JSON.stringify(this.state.Error, null, 4)}</div>
+        <div>
+          <div>
+            <Charts charts={this.state.DeviceChartStates}>
+              {this.addAPIErrors(
+                this.state.IoTEnsembleAPIState,
+                'IoT Ensemble',
+                '/docs'
+              )}
+            </Charts>
+          </div>
+        </div>
+
+        {/* <div>{JSON.stringify(this.state.Error, null, 4)}</div> */}
       </div>
     );
   }
   //#endregion
+
+  protected addAPIErrors(
+    apiState: number | undefined,
+    apiName: string,
+    docsLink: string
+  ) {
+    return (
+      <div>
+        {apiState === 401 ? (
+          <h3>
+            The security key for the {apiName} API is not configured correctly.
+          </h3>
+        ) : apiState === 500 ? (
+          <h3>There was an error calling the {apiName} API.</h3>
+        ) : apiState === 404 ? (
+          <h3>The {apiName} API is not configured correctly.</h3>
+        ) : (
+          <h3>Loading... {apiState}</h3>
+        )}
+
+        <a href={docsLink} rel="noreferrer" target="_blank">
+          Click here to learn more
+        </a>
+      </div>
+    );
+  }
 
   //#region API Methods
   //#endregion
@@ -261,7 +311,7 @@ export default class App extends React.Component<AppProperties, AppState> {
     const geocodeApi = `${this.geocodioSvcUrl}${this.geocodioQuery}?q=${location}`;
 
     fetch(geocodeApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           this.setState(
@@ -273,6 +323,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 Longitude: result.results[0].location.lng,
               },
               Error: undefined,
+              GeocodioAPIState: undefined
             },
             () => {
               this.loadCharts();
@@ -282,11 +333,29 @@ export default class App extends React.Component<AppProperties, AppState> {
         (error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            GeocodioAPIState: resp.Status,
           });
         }
       );
+  }
+
+  protected handleApiResponse(res: Response) {
+    if (res.ok === false) {
+      throw new Error(
+        JSON.stringify({
+          Status: res.status,
+          Text: res.statusText,
+        })
+      );
+    } else {
+      return res.json();
+    }
   }
 
   protected loadCharts(): void {
@@ -326,7 +395,7 @@ export default class App extends React.Component<AppProperties, AppState> {
     const iotApi = `${this.iotSvcUrl}${this.iotSvcQuery}`;
 
     fetch(iotApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const payloads = result.Payloads as any[];
@@ -378,32 +447,35 @@ export default class App extends React.Component<AppProperties, AppState> {
             CurrentDevice: curDevice,
             DeviceChartStates: devicesReadingcharts[curDevice],
             Error: undefined,
+            IoTEnsembleAPIState: undefined
           });
         },
         (error) => {
+          console.log(error);
+
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            IoTEnsembleAPIState: resp.Status,
           });
         }
       );
   }
 
   protected loadPointsData(variables: any[], points: any[]): void {
-    // const pointsApi = 'https://fathym-cloud-prd.azure-api.net/habistack/weather/ground/api/v0/point-query';
     const pointsApi = `${this.habistackSvcUrl}${this.pointsSvcQuery}`;
 
     fetch(pointsApi, {
       method: 'POST',
-      // mode: 'no-cors',
-      headers: {
-        'lcu-subscription-key': '0e367dfc37794b56b3a59ca41e927649',
-      },
       body: JSON.stringify({
         variables: variables,
         points: points,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const variableResults = result as any[];
@@ -433,7 +505,6 @@ export default class App extends React.Component<AppProperties, AppState> {
                 },
               ];
 
-              debugger;
               // Set Chart Preferences
               this.addChartPref(newVc[variableKey]);
 
@@ -445,13 +516,19 @@ export default class App extends React.Component<AppProperties, AppState> {
           this.setState({
             ChartStates: variableCharts,
             Error: undefined,
+            HabistackAPIState: undefined,
           });
         },
         (error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            HabistackAPIState: resp.Status,
           });
         }
       );
@@ -461,17 +538,17 @@ export default class App extends React.Component<AppProperties, AppState> {
     const variablesApi = `${this.habistackSvcUrl}${this.variablesSvcQuery}`;
 
     fetch(variablesApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const variables = result as any[];
 
           const variableOptions = variables.reduce((vars, variable, i) => {
-            const newVar = {
+            const newVar: any = {
               ...vars,
             };
 
-            const variableKey = `${variable.name}_${variable.level}`;
+            const variableKey: string = `${variable.name}_${variable.level}`;
 
             if (!newVar[variableKey]) {
               newVar[variableKey] = {};
@@ -493,17 +570,23 @@ export default class App extends React.Component<AppProperties, AppState> {
               // CurrentDevice: curDevice,
               Variables: variableOptions,
               Error: undefined,
+              HabistackAPIState: undefined,
             },
             () => {
               this.geocode();
             }
           );
         },
-        (error) => {
+        (error: Error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            HabistackAPIState: resp.Status,
           });
         }
       );
