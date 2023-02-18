@@ -81,7 +81,7 @@ export default class Charts extends React.Component<
           ) {
             return (
               <Grid xs={12} md={6} item={true} key={i}>
-                <Card sx={{ p: 1 }}>
+                <Card sx={{ p: 1 }} >
                   <Line
                     datasetIdKey="id"
                     data={data}

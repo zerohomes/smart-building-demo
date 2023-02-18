@@ -115,7 +115,7 @@ function ResponsiveNavBar() {
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'custom', display: 'block' }}
+                sx={{ my: 2, ml: 2, color: 'custom', display: 'block' }}
               >
                 {page}
               </Button>
