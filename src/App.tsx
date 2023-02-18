@@ -178,12 +178,9 @@ export default class App extends React.Component<AppProperties, AppState> {
     if (!this.refreshTimer) {
       this.loadVariablesData();
       this.loadIoTData();
-      this.loadIoTData();
 
       this.refreshTimer = setInterval(() => {
         this.loadCharts();
-        this.loadCharts();
-
         this.loadIoTData();
       }, this.refreshRate);
     }
@@ -209,12 +206,12 @@ export default class App extends React.Component<AppProperties, AppState> {
         {variableOptions?.length > 0 ? (
           <div>
             <div>
-            <Box sx={{ m: 2, mt: 11 }} >
-              <TextField id="outlined-basic" label="Location" variant="outlined" sx={{ mr: 1, width: { xs: '100%', md: '30%' } }} 
               {!this.state.GeocodioAPIState ? (
-                <Input
-                  value={this.state.Location.Name}
-                  onChange={(e) => this.onLocationChange(e)} onKeyDown={e => e.key === 'Enter' ? this.geocode() : ''} />
+                <Box sx={{ m: 2, mt: 11 }} >
+                <TextField id="outlined-basic" label="Location" variant="outlined" sx={{ mr: 1, width: { xs: '100%', md: '30%' } }} 
+                    value={this.state.Location.Name}
+                    onChange={(e) => this.onLocationChange(e)} onKeyDown={e => e.key === 'Enter' ? this.geocode() : ''} />
+                </Box>
               ) : (
                 this.addAPIErrors(
                   this.state.GeocodioAPIState,
@@ -222,14 +219,15 @@ export default class App extends React.Component<AppProperties, AppState> {
                   '/docs'
                 )
               )}
-            </Box>
+            </div>
+
             <Box sx={{ m: 2 }} >
-              <Select<string[]> sx={{ }}
+              <Select<string[]>
                 multiple
                 value={this.state.SelectedVariables}
                 label="Variables"
                 input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                  MenuProps={{ PaperProps: {style: { maxHeight: '50%'}}}}
+                MenuProps={{ PaperProps: {style: { maxHeight: '50%'}}}}
                 renderValue={(selected) => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map((value: any) => (
@@ -245,28 +243,25 @@ export default class App extends React.Component<AppProperties, AppState> {
                 {variableOptions}
               </Select>
 
-                <Button onClick={(e) => this.geocode()} sx={{ mt: { xs: 2, md: 0 }, ml: { md: 2 } }} >Load Forecast</Button>
-              </Box>
+              <Button onClick={(e) => this.geocode()} sx={{ mt: { xs: 2, md: 0 }, ml: { md: 2 } }} >Load Forecast</Button>
+            </Box>
 
-            <div>
-              <Box sx={{ m: 2 }} ></Box>
+            <Box sx={{ m: 2 }} >
               <Charts charts={this.state.ChartStates}>
-              
                 {this.addAPIErrors(
                   this.state.HabistackAPIState,
                   'Habistack',
                   '/docs'
                 )}
               </Charts>
-              <Box sx={{ m: 2 }} >
-              </Box>
-            </div>
+            </Box>
           </div>
         ) : (
           this.addAPIErrors(this.state.HabistackAPIState, 'Habistack', '/docs')
         )}
 
-          <div>
+        <div>
+          <Box sx={{ m: 2 }} >
             <Charts charts={this.state.DeviceChartStates}>
               {this.addAPIErrors(
                 this.state.IoTEnsembleAPIState,
@@ -274,7 +269,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 '/docs'
               )}
             </Charts>
-          </div>
+          </Box>
         </div>
 
         {/* <div>{JSON.stringify(this.state.Error, null, 4)}</div> */}
@@ -283,31 +278,31 @@ export default class App extends React.Component<AppProperties, AppState> {
   }
   //#endregion
 
-  protected addAPIErrors(
-    apiState: number | undefined,
-    apiName: string,
-    docsLink: string
-  ) {
-    return (
-      <div>
-        {apiState === 401 ? (
-          <h3>
-            The security key for the {apiName} API is not configured correctly.
-          </h3>
-        ) : apiState === 500 ? (
-          <h3>There was an error calling the {apiName} API.</h3>
-        ) : apiState === 404 ? (
-          <h3>The {apiName} API is not configured correctly.</h3>
-        ) : (
-          <h3>Loading... {apiState}</h3>
-        )}
+protected addAPIErrors(
+  apiState: number | undefined,
+  apiName: string,
+  docsLink: string
+) {
+  return (
+    <div>
+      {apiState === 401 ? (
+        <h3>
+          The security key for the {apiName} API is not configured correctly.
+        </h3>
+      ) : apiState === 500 ? (
+        <h3>There was an error calling the {apiName} API.</h3>
+      ) : apiState === 404 ? (
+        <h3>The {apiName} API is not configured correctly.</h3>
+      ) : (
+        <h3>Loading... {apiState}</h3>
+      )}
 
-        <a href={docsLink} rel="noreferrer" target="_blank">
-          Click here to learn more
-        </a>
-      </div>
-    );
-  }
+      <a href={docsLink} rel="noreferrer" target="_blank">
+        Click here to learn more
+      </a>
+    </div>
+  );
+}
 
   //#region API Methods
   //#endregion
@@ -324,10 +319,9 @@ export default class App extends React.Component<AppProperties, AppState> {
       mql.matches ? darkness = true : darkness = false;
       this.setState({ IsDark: darkness })
     });
+  }
 
-}
-
-protected addChartPref(chartState: ChartState): void {
+  protected addChartPref(chartState: ChartState): void {
     var currentDefaultChartPref: any = {};
 
     this.state.IsDark && currentDefaultChartPref !== undefined ? 
@@ -367,7 +361,8 @@ protected addChartPref(chartState: ChartState): void {
                   
         });
       }
-    }}
+    }
+  }
 
   protected geocode(): void {
     const location = encodeURIComponent(this.state.Location.Name);

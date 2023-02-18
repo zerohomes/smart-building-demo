@@ -196,6 +196,7 @@ export default class Charts extends React.Component<
               </Grid>
             );
           }
+          return null;
         })}
       </Grid>
     ) : (
