@@ -34,6 +34,12 @@ class AppState {
 
   public Error?: string;
 
+  public GeocodioAPIState?: number;
+
+  public HabistackAPIState?: number;
+
+  public IoTEnsembleAPIState?: number;
+
   public Location: {
     Data: any;
     Latitude: number;
@@ -93,9 +99,9 @@ export default class App extends React.Component<AppProperties, AppState> {
   protected pointsSvcQuery: string;
 
   protected refreshRate: number;
-  
+
   protected refreshTimer: any;
-  
+
   protected variablesSvcQuery: string;
   //#endregion
 
@@ -160,8 +166,8 @@ export default class App extends React.Component<AppProperties, AppState> {
         Data: {},
         Latitude: 0,
         Longitude: 0,
-        Name: defaultLocation
-      }
+        Name: defaultLocation,
+      },
     };
   }
   //#endregion
@@ -172,9 +178,13 @@ export default class App extends React.Component<AppProperties, AppState> {
     if (!this.refreshTimer) {
       this.loadVariablesData();
       this.loadIoTData();
+      this.loadIoTData();
 
       this.refreshTimer = setInterval(() => {
         this.loadCharts();
+        this.loadCharts();
+
+        this.loadIoTData();
       }, this.refreshRate);
     }
   }
@@ -199,61 +209,105 @@ export default class App extends React.Component<AppProperties, AppState> {
         {variableOptions?.length > 0 ? (
           <div>
             <div>
-              <Box sx={{ m: 2, mt: 11 }} >
+            <Box sx={{ m: 2, mt: 11 }} >
               <TextField id="outlined-basic" label="Location" variant="outlined" sx={{ mr: 1, width: { xs: '100%', md: '30%' } }} 
+              {!this.state.GeocodioAPIState ? (
+                <Input
                   value={this.state.Location.Name}
                   onChange={(e) => this.onLocationChange(e)} onKeyDown={e => e.key === 'Enter' ? this.geocode() : ''} />
-              </Box>
-              <Box sx={{ m: 2 }} >
-                <Select<string[]> sx={{ }}
-                  multiple
-                  value={this.state.SelectedVariables}
-                  label="Variables"
-                  input={
-                    <OutlinedInput id="select-multiple-chip" label="Chip" />
-                  }
+              ) : (
+                this.addAPIErrors(
+                  this.state.GeocodioAPIState,
+                  'Geocodio',
+                  '/docs'
+                )
+              )}
+            </Box>
+            <Box sx={{ m: 2 }} >
+              <Select<string[]> sx={{ }}
+                multiple
+                value={this.state.SelectedVariables}
+                label="Variables"
+                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
                   MenuProps={{ PaperProps: {style: { maxHeight: '50%'}}}}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value: any) => (
-                        <Chip
-                          key={value}
-                          label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                  onChange={(e) => this.onVariableChange(e)}
-                >
-                  {variableOptions}
-                </Select>
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value: any) => (
+                      <Chip
+                        key={value}
+                        label={`${this.state.Variables[value].name} (${this.state.Variables[value].level})`}
+                      />
+                    ))}
+                  </Box>
+                )}
+                onChange={(e) => this.onVariableChange(e)}
+              >
+                {variableOptions}
+              </Select>
 
                 <Button onClick={(e) => this.geocode()} sx={{ mt: { xs: 2, md: 0 }, ml: { md: 2 } }} >Load Forecast</Button>
               </Box>
 
-              <div>
-                <Box sx={{ m: 2 }} >
-                <Charts charts={this.state.ChartStates}></Charts>
-                </Box>
-              </div>
-            </div>
-
             <div>
+              <Box sx={{ m: 2 }} ></Box>
+              <Charts charts={this.state.ChartStates}>
+              
+                {this.addAPIErrors(
+                  this.state.HabistackAPIState,
+                  'Habistack',
+                  '/docs'
+                )}
+              </Charts>
               <Box sx={{ m: 2 }} >
-              <Charts charts={this.state.DeviceChartStates}></Charts>
               </Box>
             </div>
           </div>
         ) : (
-          'Loading...'
+          this.addAPIErrors(this.state.HabistackAPIState, 'Habistack', '/docs')
         )}
 
-        <div>{JSON.stringify(this.state.Error, null, 4)}</div>
+          <div>
+            <Charts charts={this.state.DeviceChartStates}>
+              {this.addAPIErrors(
+                this.state.IoTEnsembleAPIState,
+                'IoT Ensemble',
+                '/docs'
+              )}
+            </Charts>
+          </div>
+        </div>
 
+        {/* <div>{JSON.stringify(this.state.Error, null, 4)}</div> */}
       </div>
     );
   }
   //#endregion
+
+  protected addAPIErrors(
+    apiState: number | undefined,
+    apiName: string,
+    docsLink: string
+  ) {
+    return (
+      <div>
+        {apiState === 401 ? (
+          <h3>
+            The security key for the {apiName} API is not configured correctly.
+          </h3>
+        ) : apiState === 500 ? (
+          <h3>There was an error calling the {apiName} API.</h3>
+        ) : apiState === 404 ? (
+          <h3>The {apiName} API is not configured correctly.</h3>
+        ) : (
+          <h3>Loading... {apiState}</h3>
+        )}
+
+        <a href={docsLink} rel="noreferrer" target="_blank">
+          Click here to learn more
+        </a>
+      </div>
+    );
+  }
 
   //#region API Methods
   //#endregion
@@ -261,17 +315,59 @@ export default class App extends React.Component<AppProperties, AppState> {
   //#region Helpers
   protected appDark(): void {
 
-      var darkness = false;
-      const mql = window.matchMedia('(prefers-color-scheme: dark)');
-      mql.matches ? darkness = true : darkness = false;
-      this.setState({ IsDark: darkness });
+    var darkness = false;
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    mql.matches ? darkness = true : darkness = false;
+    this.setState({ IsDark: darkness });
 
-      mql.addEventListener("change", (event) => {
-        mql.matches ? darkness = true : darkness = false;
-        this.setState({ IsDark: darkness })
+    mql.addEventListener("change", (event) => {
+      mql.matches ? darkness = true : darkness = false;
+      this.setState({ IsDark: darkness })
+    });
+
+}
+
+protected addChartPref(chartState: ChartState): void {
+    var currentDefaultChartPref: any = {};
+
+    this.state.IsDark && currentDefaultChartPref !== undefined ? 
+      currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Dark")
+    : currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Light")
+
+    const currentChartPref = this.state.ChartPrefs.find(
+      (e: any) => e.Name === chartState.Datasets[0].label
+    );
+
+    if (currentDefaultChartPref != undefined) {
+      Object.keys(currentDefaultChartPref).forEach((key) => {
+        // Chartjs properties must have a lower case initial letter
+        const fixedKey =
+          key.toString().charAt(0).toLowerCase() + key.substring(1);
+        chartState.Datasets[0][fixedKey] = currentDefaultChartPref[key];
+
+        // Pass Options
+        chartState.Datasets[0].options = currentDefaultChartPref?.Options;
       });
 
-  }
+      if(currentChartPref !== undefined) {
+        const currentCombined = {...currentDefaultChartPref, ...currentChartPref}
+        const defaultOptions = currentDefaultChartPref["Options"];
+        const chartOptions = currentChartPref["Options"];
+
+        const currentCombinedOptions = _.merge(chartOptions, defaultOptions);
+        
+        Object.keys(currentCombined).forEach(key => {
+
+          // Chartjs properties must have a lower case initial letter
+          const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
+          chartState.Datasets[0][fixedKey] = currentCombined[key];
+
+          // Pass Options
+          chartState.Datasets[0].options = currentCombinedOptions;
+                  
+        });
+      }
+    }}
 
   protected geocode(): void {
     const location = encodeURIComponent(this.state.Location.Name);
@@ -279,7 +375,7 @@ export default class App extends React.Component<AppProperties, AppState> {
     const geocodeApi = `${this.geocodioSvcUrl}${this.geocodioQuery}?q=${location}`;
 
     fetch(geocodeApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           this.setState(
@@ -291,6 +387,7 @@ export default class App extends React.Component<AppProperties, AppState> {
                 Longitude: result.results[0].location.lng,
               },
               Error: undefined,
+              GeocodioAPIState: undefined
             },
             () => {
               this.loadCharts();
@@ -300,11 +397,29 @@ export default class App extends React.Component<AppProperties, AppState> {
         (error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            GeocodioAPIState: resp.Status,
           });
         }
       );
+  }
+
+  protected handleApiResponse(res: Response) {
+    if (res.ok === false) {
+      throw new Error(
+        JSON.stringify({
+          Status: res.status,
+          Text: res.statusText,
+        })
+      );
+    } else {
+      return res.json();
+    }
   }
 
   protected loadCharts(): void {
@@ -344,7 +459,7 @@ export default class App extends React.Component<AppProperties, AppState> {
     const iotApi = `${this.iotSvcUrl}${this.iotSvcQuery}`;
 
     fetch(iotApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const payloads = result.Payloads as any[];
@@ -382,45 +497,7 @@ export default class App extends React.Component<AppProperties, AppState> {
               });
 
               // Set Chart Preferences
-              var currentDefaultChartPref: any = {};
-
-              this.state.IsDark && currentDefaultChartPref !== undefined ? 
-                currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Dark")
-              : currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Light")
-              
-              const currentChartPref:any = this.state.ChartPrefs.find((e: any) => e.Name === newDr[payload.DeviceID][srKey].Datasets[0].label);
-
-              if(currentDefaultChartPref !== undefined) {
-                Object.keys(currentDefaultChartPref).forEach(key => {
-
-                  // Chartjs properties must have a lower case initial letter
-                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
-                  newDr[payload.DeviceID][srKey].Datasets[0][fixedKey] = currentDefaultChartPref[key];
-
-                  // Pass Options
-                  newDr[payload.DeviceID][srKey].Datasets[0].options = currentDefaultChartPref?.Options;
-                  
-                });
-              }
-
-              if(currentChartPref !== undefined) {
-                const currentCombined = {...currentDefaultChartPref, ...currentChartPref}
-                const defaultOptions = currentDefaultChartPref["Options"];
-                const chartOptions = currentChartPref["Options"];
-
-                const currentCombinedOptions = _.merge(chartOptions, defaultOptions);
-                
-                Object.keys(currentCombined).forEach(key => {
-
-                  // Chartjs properties must have a lower case initial letter
-                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
-                  newDr[payload.DeviceID][srKey].Datasets[0][fixedKey] = currentCombined[key];
-
-                  // Pass Options
-                  newDr[payload.DeviceID][srKey].Datasets[0].options = currentCombinedOptions;
-                  
-                });
-              }
+              this.addChartPref(newDr[payload.DeviceID][srKey]);
             });
 
             return newDr;
@@ -434,32 +511,35 @@ export default class App extends React.Component<AppProperties, AppState> {
             CurrentDevice: curDevice,
             DeviceChartStates: devicesReadingcharts[curDevice],
             Error: undefined,
+            IoTEnsembleAPIState: undefined
           });
         },
         (error) => {
+          console.log(error);
+
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            IoTEnsembleAPIState: resp.Status,
           });
         }
       );
   }
 
   protected loadPointsData(variables: any[], points: any[]): void {
-    // const pointsApi = 'https://fathym-cloud-prd.azure-api.net/habistack/weather/ground/api/v0/point-query';
     const pointsApi = `${this.habistackSvcUrl}${this.pointsSvcQuery}`;
 
     fetch(pointsApi, {
       method: 'POST',
-      // mode: 'no-cors',
-      headers: {
-        'lcu-subscription-key': '0e367dfc37794b56b3a59ca41e927649',
-      },
       body: JSON.stringify({
         variables: variables,
         points: points,
       }),
     })
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const variableResults = result as any[];
@@ -490,45 +570,7 @@ export default class App extends React.Component<AppProperties, AppState> {
               ];
 
               // Set Chart Preferences
-              var currentDefaultChartPref: any = {};
-
-              this.state.IsDark && currentDefaultChartPref !== undefined ? 
-                currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Dark")
-              : currentDefaultChartPref = this.state.DefaultChartPrefs.find((e: any) => e.Mode === "Light")
-
-              const currentChartPref:any = this.state.ChartPrefs.find((e: any) => e.Name === newVc[variableKey].Datasets[0].label);
-
-              if(currentDefaultChartPref !== undefined) {
-                Object.keys(currentDefaultChartPref).forEach(key => {
-
-                  // Chartjs properties must have a lower case initial letter
-                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
-                  newVc[variableKey].Datasets[0][fixedKey] = currentDefaultChartPref[key];
-
-                  // Pass Options
-                  newVc[variableKey].Datasets[0].options = currentDefaultChartPref?.Options;
-                  
-                });
-              }
-
-              if(currentChartPref !== undefined) {
-                const currentCombined = {...currentDefaultChartPref, ...currentChartPref}
-                const defaultOptions = currentDefaultChartPref["Options"];
-                const chartOptions = currentChartPref["Options"];
-
-                const currentCombinedOptions = _.merge(chartOptions, defaultOptions);
-
-                Object.keys(currentCombined).forEach(key => {
-
-                  // Chartjs properties must have a lower case initial letter
-                  const fixedKey = key.toString().charAt(0).toLowerCase() + key.substring(1);
-                  newVc[variableKey].Datasets[0][fixedKey] = currentCombined[key];
-
-                  // Pass Options
-                  newVc[variableKey].Datasets[0].options = currentCombinedOptions;
-                  
-                });
-              }
+              this.addChartPref(newVc[variableKey]);
 
               return newVc;
             },
@@ -537,13 +579,19 @@ export default class App extends React.Component<AppProperties, AppState> {
           this.setState({
             ChartStates: variableCharts,
             Error: undefined,
+            HabistackAPIState: undefined,
           });
         },
         (error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            HabistackAPIState: resp.Status,
           });
         }
       );
@@ -553,17 +601,17 @@ export default class App extends React.Component<AppProperties, AppState> {
     const variablesApi = `${this.habistackSvcUrl}${this.variablesSvcQuery}`;
 
     fetch(variablesApi)
-      .then((res) => res.json())
+      .then((res) => this.handleApiResponse(res))
       .then(
         (result) => {
           const variables = result as any[];
 
           const variableOptions = variables.reduce((vars, variable, i) => {
-            const newVar = {
+            const newVar: any = {
               ...vars,
             };
 
-            const variableKey = `${variable.name}_${variable.level}`;
+            const variableKey: string = `${variable.name}_${variable.level}`;
 
             if (!newVar[variableKey]) {
               newVar[variableKey] = {};
@@ -585,17 +633,23 @@ export default class App extends React.Component<AppProperties, AppState> {
               // CurrentDevice: curDevice,
               Variables: variableOptions,
               Error: undefined,
+              HabistackAPIState: undefined,
             },
             () => {
               this.geocode();
             }
           );
         },
-        (error) => {
+        (error: Error) => {
           console.log(error);
 
+          var resp = error.message.startsWith('{')
+            ? JSON.parse(error.message)
+            : {};
+
           this.setState({
-            Error: error,
+            Error: error.message,
+            HabistackAPIState: resp.Status,
           });
         }
       );

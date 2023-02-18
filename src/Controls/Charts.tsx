@@ -6,6 +6,8 @@ import Draggable from 'react-draggable';
 
 class ChartsProperties {
   public charts?: { [lookup: string]: ChartState };
+
+  public children?: React.ReactNode;
 }
 
 class ChartsState {}
@@ -73,33 +75,49 @@ export default class Charts extends React.Component<
       <Grid container spacing={2} >
         {datas.map((data, i) => {
           //console.log(data.datasets[0].chartType);
-          if (data.datasets[0].chartType === "Line" || !data.datasets[0].chartType) {
-          return (
-            <Grid xs={12} md={6} item={true} key={i}>
-              <Card sx={{ p: 1 }} >
-                <Line datasetIdKey="id" data={data} options={data.datasets[0].options} />
-              </Card>
-            </Grid>
-          ); }
-          if (data.datasets[0].chartType === "Bar") {
+          if (
+            data.datasets[0].chartType === 'Line' ||
+            !data.datasets[0].chartType
+          ) {
+            return (
+              <Grid xs={12} md={6} item={true} key={i}>
+                <Card sx={{ p: 1 }}>
+                  <Line
+                    datasetIdKey="id"
+                    data={data}
+                    options={data.datasets[0].options}
+                  />
+                </Card>
+              </Grid>
+            );
+          }
+          if (data.datasets[0].chartType === 'Bar') {
             return (
               <Grid xs={12} md={6} item={true} key={i}>
                 <Card sx={{ p: 1 }} >
-                  <Bar datasetIdKey="id" data={data} options={data.datasets[0].options} />
+                  <Bar
+                    datasetIdKey="id"
+                    data={data}
+                    options={data.datasets[0].options}
+                  />
                 </Card>
               </Grid>
-          ); }
+            );
+          }
 
-          const dataLength = data.datasets[0].data.length - 1
+          const dataLength = data.datasets[0].data.length - 1;
 
-          if (data.datasets[0].label === "tempf" && data.datasets[0].data[dataLength].y >= 70) {
+          if (
+            data.datasets[0].label === 'tempf' &&
+            data.datasets[0].data[dataLength].y >= 70
+          ) {
             return (
               <Grid xs={12} md={6} item={true} key={i}>
                 <Card>
                   <div id="human">
                     <Draggable>
                       <div id="tempSensor">
-                        <img src="icons/tempHot.svg" alt="tempHot"/>
+                        <img src="icons/tempHot.svg" alt="tempHot" />
                         {data.datasets[0].data[dataLength].x} <br />
                         {data.datasets[0].data[dataLength].y}
                       </div>
@@ -107,15 +125,19 @@ export default class Charts extends React.Component<
                   </div>
                 </Card>
               </Grid>
-          ); }
-          if (data.datasets[0].label === "tempf" && data.datasets[0].data[dataLength].y < 70) {
+            );
+          }
+          if (
+            data.datasets[0].label === 'tempf' &&
+            data.datasets[0].data[dataLength].y < 70
+          ) {
             return (
               <Grid xs={12} md={6} item={true} key={i}>
                 <Card>
                   <div id="human">
                     <Draggable>
                       <div id="tempSensor">
-                        <img src="icons/tempCold.svg" alt="tempCold"/>
+                        <img src="icons/tempCold.svg" alt="tempCold" />
                         {data.datasets[0].data[dataLength].x} <br />
                         {data.datasets[0].data[dataLength].y}
                       </div>
@@ -123,16 +145,24 @@ export default class Charts extends React.Component<
                   </div>
                 </Card>
               </Grid>
-          ); }
+            );
+          }
 
-          if (data.datasets[0].chartType === "Building" && data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 0) {
+          if (
+            data.datasets[0].chartType === 'Building' &&
+            data.datasets[0].label === 'motion' &&
+            data.datasets[0].data[dataLength].y === 0
+          ) {
             return (
               <Grid xs={12} md={12} item={true} key={i}>
                 <Card>
                   <div id="building">
                     <Draggable>
                       <div id="motionSensor">
-                        <img src="icons/motionNotDetected.svg" alt="motionNotDetected"/>
+                        <img
+                          src="icons/motionNotDetected.svg"
+                          alt="motionNotDetected"
+                        />
                         {data.datasets[0].data[dataLength].x} <br />
                         No Motion Detected
                       </div>
@@ -140,15 +170,23 @@ export default class Charts extends React.Component<
                   </div>
                 </Card>
               </Grid>
-          ); }
-          if (data.datasets[0].chartType === "Building" && data.datasets[0].label === "motion" && data.datasets[0].data[dataLength].y === 1) {
+            );
+          }
+          if (
+            data.datasets[0].chartType === 'Building' &&
+            data.datasets[0].label === 'motion' &&
+            data.datasets[0].data[dataLength].y === 1
+          ) {
             return (
               <Grid xs={12} md={12} item={true} key={i}>
                 <Card>
                   <div id="building">
                     <Draggable>
                       <div id="motionSensor">
-                        <img src="icons/motionDetected.svg" alt="motionDetected"/>
+                        <img
+                          src="icons/motionDetected.svg"
+                          alt="motionDetected"
+                        />
                         {data.datasets[0].data[dataLength].x} <br />
                         Motion Detected!
                       </div>
@@ -156,12 +194,14 @@ export default class Charts extends React.Component<
                   </div>
                 </Card>
               </Grid>
-          ); }
-          return null;
+            );
+          }
         })}
       </Grid>
     ) : (
-      'Loading...'
+      <div>
+        {this.props.children}
+      </div>
     );
   }
   //#endregion
