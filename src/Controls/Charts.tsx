@@ -67,8 +67,6 @@ export default class Charts extends React.Component<
       };
     });
 
-    
-
     console.log(datas);
 
     return datas?.length > 0 ? (
@@ -105,97 +103,97 @@ export default class Charts extends React.Component<
             );
           }
 
-          const dataLength = data.datasets[0].data.length - 1;
+          // const dataLength = data.datasets[0].data.length - 1;
 
-          if (
-            data.datasets[0].label === 'tempf' &&
-            data.datasets[0].data[dataLength].y >= 70
-          ) {
-            return (
-              <Grid xs={12} md={6} item={true} key={i}>
-                <Card>
-                  <div id="human">
-                    <Draggable>
-                      <div id="tempSensor">
-                        <img src="icons/tempHot.svg" alt="tempHot" />
-                        {data.datasets[0].data[dataLength].x} <br />
-                        {data.datasets[0].data[dataLength].y}
-                      </div>
-                    </Draggable>
-                  </div>
-                </Card>
-              </Grid>
-            );
-          }
-          if (
-            data.datasets[0].label === 'tempf' &&
-            data.datasets[0].data[dataLength].y < 70
-          ) {
-            return (
-              <Grid xs={12} md={6} item={true} key={i}>
-                <Card>
-                  <div id="human">
-                    <Draggable>
-                      <div id="tempSensor">
-                        <img src="icons/tempCold.svg" alt="tempCold" />
-                        {data.datasets[0].data[dataLength].x} <br />
-                        {data.datasets[0].data[dataLength].y}
-                      </div>
-                    </Draggable>
-                  </div>
-                </Card>
-              </Grid>
-            );
-          }
+          // if (
+          //   data.datasets[0].label === 'tempf' &&
+          //   data.datasets[0].data[dataLength].y >= 70
+          // ) {
+          //   return (
+          //     <Grid xs={12} md={6} item={true} key={i}>
+          //       <Card>
+          //         <div id="human">
+          //           <Draggable>
+          //             <div id="tempSensor">
+          //               <img src="icons/tempHot.svg" alt="tempHot" />
+          //               {data.datasets[0].data[dataLength].x} <br />
+          //               {data.datasets[0].data[dataLength].y}
+          //             </div>
+          //           </Draggable>
+          //         </div>
+          //       </Card>
+          //     </Grid>
+          //   );
+          // }
+          // if (
+          //   data.datasets[0].label === 'tempf' &&
+          //   data.datasets[0].data[dataLength].y < 70
+          // ) {
+          //   return (
+          //     <Grid xs={12} md={6} item={true} key={i}>
+          //       <Card>
+          //         <div id="human">
+          //           <Draggable>
+          //             <div id="tempSensor">
+          //               <img src="icons/tempCold.svg" alt="tempCold" />
+          //               {data.datasets[0].data[dataLength].x} <br />
+          //               {data.datasets[0].data[dataLength].y}
+          //             </div>
+          //           </Draggable>
+          //         </div>
+          //       </Card>
+          //     </Grid>
+          //   );
+          // }
 
-          if (
-            data.datasets[0].chartType === 'Building' &&
-            data.datasets[0].label === 'motion' &&
-            data.datasets[0].data[dataLength].y === 0
-          ) {
-            return (
-              <Grid xs={12} md={12} item={true} key={i}>
-                <Card>
-                  <div id="building">
-                    <Draggable>
-                      <div id="motionSensor">
-                        <img
-                          src="icons/motionNotDetected.svg"
-                          alt="motionNotDetected"
-                        />
-                        {data.datasets[0].data[dataLength].x} <br />
-                        No Motion Detected
-                      </div>
-                    </Draggable>
-                  </div>
-                </Card>
-              </Grid>
-            );
-          }
-          if (
-            data.datasets[0].chartType === 'Building' &&
-            data.datasets[0].label === 'motion' &&
-            data.datasets[0].data[dataLength].y === 1
-          ) {
-            return (
-              <Grid xs={12} md={12} item={true} key={i}>
-                <Card>
-                  <div id="building">
-                    <Draggable>
-                      <div id="motionSensor">
-                        <img
-                          src="icons/motionDetected.svg"
-                          alt="motionDetected"
-                        />
-                        {data.datasets[0].data[dataLength].x} <br />
-                        Motion Detected!
-                      </div>
-                    </Draggable>
-                  </div>
-                </Card>
-              </Grid>
-            );
-          }
+          // if (
+          //   data.datasets[0].chartType === 'Building' &&
+          //   data.datasets[0].label === 'motion' &&
+          //   data.datasets[0].data[dataLength].y === 0
+          // ) {
+          //   return (
+          //     <Grid xs={12} md={12} item={true} key={i}>
+          //       <Card>
+          //         <div id="building">
+          //           <Draggable>
+          //             <div id="motionSensor">
+          //               <img
+          //                 src="icons/motionNotDetected.svg"
+          //                 alt="motionNotDetected"
+          //               />
+          //               {data.datasets[0].data[dataLength].x} <br />
+          //               No Motion Detected
+          //             </div>
+          //           </Draggable>
+          //         </div>
+          //       </Card>
+          //     </Grid>
+          //   );
+          // }
+          // if (
+          //   data.datasets[0].chartType === 'Building' &&
+          //   data.datasets[0].label === 'motion' &&
+          //   data.datasets[0].data[dataLength].y === 1
+          // ) {
+          //   return (
+          //     <Grid xs={12} md={12} item={true} key={i}>
+          //       <Card>
+          //         <div id="building">
+          //           <Draggable>
+          //             <div id="motionSensor">
+          //               <img
+          //                 src="icons/motionDetected.svg"
+          //                 alt="motionDetected"
+          //               />
+          //               {data.datasets[0].data[dataLength].x} <br />
+          //               Motion Detected!
+          //             </div>
+          //           </Draggable>
+          //         </div>
+          //       </Card>
+          //     </Grid>
+          //   );
+          // }
           return null;
         })}
       </Grid>

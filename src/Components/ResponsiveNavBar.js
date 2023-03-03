@@ -36,7 +36,7 @@ function ResponsiveNavBar() {
   };
 
   return (
-    <AppBar position="fixed" color="custom" sx={{backdropFilter: 'blur(20px)'}} >
+    <AppBar position="fixed" color="custom" >
       <Container maxWidth="x2">
         <Toolbar disableGutters>
           <FathymLogo color="primary" fontSize="large" sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -92,7 +92,7 @@ function ResponsiveNavBar() {
               ))}
             </Menu>
           </Box>
-          <FathymLogo color="primary" sx={{ fontSize: 50, display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <FathymLogo color="primary" fontSize="large" sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap

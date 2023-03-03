@@ -75,6 +75,8 @@
             {
               Name: 'Temperature',
               ChartType: 'Line',
+              DisplayUnits: '°F',
+              DisplayCurrent: true,
               BackgroundColor:'rgb(0, 125, 125)',
               BorderColor: 'rgb(0, 0, 255)',
               BorderDash: [15, 3, 3, 3],
@@ -83,34 +85,53 @@
             {
               Name: 'Humidity',
               ChartType: 'Bar',
+              DisplayCurrent: true,
               BackgroundColor:'rgb(255, 0, 0)',
               BorderColor: 'rgb(200, 0, 0)',
               Options: { scales: { y: { beginAtZero: true } } }
             },
             {
-              Name: 'WindGust (Surface)',
+              Name: 'Temperature (Surface)',
+              ConvertUnits: 'kelvinToFahrenheit',
+              DisplayUnits: '°F',
+              DisplayCurrent: true,
               ChartType: 'Line',
-              BackgroundColor:'rgb(0, 255, 70)',
-              BorderColor: 'rgb(0, 220, 70)'
+              BackgroundColor:'rgb(255, 0, 30)',
+              BorderColor: 'rgb(240, 0, 30)',
+              Options: { scales: { y: { beginAtZero: false } } }
+            },
+            {
+              Name: 'Temperature (2Meters)',
+              ConvertUnits: 'kelvinToFahrenheit',
+              DisplayUnits: '°F',
+              DisplayCurrent: true,
+              ChartType: 'Line',
+              BackgroundColor:'rgb(255, 0, 30)',
+              BorderColor: 'rgb(240, 0, 30)',
+              Options: { scales: { y: { beginAtZero: false } } }
+            },
+            {
+              Name: 'WindGust (Surface)',
+              ConvertUnits: 'mSecToMPH',
+              ChartType: 'Line',
+              DisplayCurrent: true,
+              BackgroundColor:'rgb(80, 80, 255)',
+              BorderColor: 'rgb(80, 80, 255)'
             },
             {
               Name: 'WindSpeed (10Meters)',
+              ConvertUnits: 'mSecToMPH',
               ChartType: 'Line',
+              DisplayCurrent: true,
               BackgroundColor:'rgb(0, 255, 30)',
               BorderColor: 'rgb(0, 180, 30)'
             },
             {
               Name: 'WindDirection (10Meters)',
               ChartType: 'Line',
+              DisplayCurrent: true,
               BackgroundColor:'rgb(200, 200, 0)',
               BorderColor: 'rgb(170, 200, 0)',
-            },
-            {
-              Name: 'Temperature (Surface)',
-              ChartType: 'Line',
-              BackgroundColor:'rgb(255, 0, 30)',
-              BorderColor: 'rgb(240, 0, 30)',
-              Options: { scales: { y: { beginAtZero: false } } }
             },
             {
               Name: 'motion',
